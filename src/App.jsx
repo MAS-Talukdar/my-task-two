@@ -327,4 +327,265 @@ const TaskStatus = ({
   </div>
 );
 
+
+
+// Footer Component
+const Footer = () => (
+  <footer className="bg-gray-800 text-gray-300 py-10">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+      {/* Column 1: Website Info */}
+      <div>
+        <h3 className="text-gray-100 text-lg font-semibold mb-3">
+          CS — Ticket System
+        </h3>
+        <p className="text-sm leading-relaxed">
+          Lorem ipsum is simply dummy text of the printing and typesetting
+          industry. Lorem Ipsum has been the industry's standard dummy text ever
+          since the 1500s, when an unknown printer took a galley of type and
+          scrambled it to make a type specimen book.
+        </p>
+      </div>
+
+      {/* Column 2: Company */}
+      <div>
+        <h4 className="text-gray-100 font-semibold mb-3">Company</h4>
+        <ul className="space-y-2 text-sm">
+          <li>
+            <a href="#" className="hover:text-white transition duration-150">
+              About Us
+            </a>
+          </li>
+          <li>
+            <a href="#" className="hover:text-white transition duration-150">
+              Our Mission
+            </a>
+          </li>
+          <li>
+            <a href="#" className="hover:text-white transition duration-150">
+              Contact Sales
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      {/* Column 3: Services */}
+      <div>
+        <h4 className="text-gray-100 font-semibold mb-3">Services</h4>
+        <ul className="space-y-2 text-sm">
+          <li>
+            <a href="#" className="hover:text-white transition duration-150">
+              Products & Services
+            </a>
+          </li>
+          <li>
+            <a href="#" className="hover:text-white transition duration-150">
+              Customer Stories
+            </a>
+          </li>
+          <li>
+            <a href="#" className="hover:text-white transition duration-150">
+              Download Apps
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      {/* Column 4: Information */}
+      <div>
+        <h4 className="text-gray-100 font-semibold mb-3">Information</h4>
+        <ul className="space-y-2 text-sm">
+          <li>
+            <a href="#" className="hover:text-white transition duration-150">
+              Privacy Policy
+            </a>
+          </li>
+          <li>
+            <a href="#" className="hover:text-white transition duration-150">
+              Terms & Conditions
+            </a>
+          </li>
+          <li>
+            <a href="#" className="hover:text-white transition duration-150">
+              Join Us
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      {/* Column 5: Social Links */}
+      <div>
+        <h4 className="text-gray-100 font-semibold mb-3">Social Links</h4>
+        <ul className="space-y-2 text-sm">
+          <li className="flex items-center">
+            <i className="fab fa-twitter w-4 h-4 mr-2 text-blue-400"></i>
+            <a href="#" className="hover:text-white transition duration-150">
+              @CS — Ticket System
+            </a>
+          </li>{" "}
+          {/* Replaced Twitter icon */}
+          <li className="flex items-center">
+            <i className="fab fa-facebook-f w-4 h-4 mr-2 text-blue-600"></i>
+            <a href="#" className="hover:text-white transition duration-150">
+              @CS — Ticket System
+            </a>
+          </li>{" "}
+          {/* Replaced Facebook icon */}
+          <li className="flex items-center">
+            <i className="fab fa-instagram w-4 h-4 mr-2 text-pink-500"></i>
+            <a href="#" className="hover:text-white transition duration-150">
+              @CS — Ticket System
+            </a>
+          </li>{" "}
+          {/* Replaced Instagram icon */}
+          <li className="flex items-center">
+            <i className="fas fa-envelope w-4 h-4 mr-2 text-red-400"></i>
+            <a href="#" className="hover:text-white transition duration-150">
+              support@cst.com
+            </a>
+          </li>{" "}
+          {/* Replaced Mail icon */}
+        </ul>
+      </div>
+    </div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-gray-500 mt-10 border-t border-gray-700 pt-6">
+      <p>&copy; 2025 CS — Ticket System. All rights reserved.</p>
+    </div>
+  </footer>
+);
+
+// --- MAIN APP COMPONENT ---
+const App = () => {
+  const [tickets, setTickets] = useState(initialTicketsData);
+  const [recentlyResolvedTicket, setRecentlyResolvedTicket] = useState(null); // For displaying in right sidebar
+
+  // Derived States using useMemo for efficiency
+  // FIX: Changed filter to show all tickets that are NOT resolved, ensuring tickets
+  // in the 'InProgress-Queue' are still visible in the main list.
+  const availableTickets = useMemo(
+    () => tickets.filter((t) => t.status !== "Resolved"),
+    [tickets],
+  );
+
+  const inProgressQueue = useMemo(
+    () => tickets.filter((t) => t.status === "InProgress-Queue"),
+    [tickets],
+  );
+
+  const totalResolvedCount = useMemo(
+    () => tickets.filter((t) => t.status === "Resolved").length,
+    [tickets],
+  );
+
+  const inProgressCount = inProgressQueue.length; // Count of tickets in the user's queue
+
+  // Handler to move a ticket from Open to InProgress-Queue
+  const handleAddToProgress = (ticketId) => {
+    const ticketToAdd = tickets.find((t) => t.id === ticketId);
+    if (!ticketToAdd || ticketToAdd.status !== "Open") {
+      toast.warn("Ticket is already in your task queue or resolved!", {
+        position: "top-right",
+      });
+      return;
+    }
+
+    setTickets((prevTickets) =>
+      prevTickets.map((ticket) =>
+        // Update status to 'InProgress-Queue' to move it to the right queue and visually distinguish it
+        ticket.id === ticketId
+          ? { ...ticket, status: "InProgress-Queue" }
+          : ticket,
+      ),
+    );
+    toast.info("Ticket successfully added to your task queue!", {
+      position: "top-right",
+    });
+  };
+
+  // Handler to move a ticket from InProgress-Queue to Resolved
+  const handleCompleteTicket = (ticketId) => {
+    const completedTicket = tickets.find((t) => t.id === ticketId);
+    if (completedTicket) {
+      setTickets((prevTickets) =>
+        prevTickets.map((ticket) =>
+          // Update status to 'Resolved'
+          ticket.id === ticketId ? { ...ticket, status: "Resolved" } : ticket,
+        ),
+      );
+      setRecentlyResolvedTicket(completedTicket); // Set for display in sidebar
+      toast.success("Ticket resolved! Great work!", {
+        position: "bottom-right",
+      });
+    }
+  };
+
+  // Handler to remove a ticket from the queue and put it back to Open
+  const handleRemoveFromProgress = (ticketId) => {
+    setTickets((prevTickets) =>
+      prevTickets.map((ticket) =>
+        ticket.id === ticketId ? { ...ticket, status: "Open" } : ticket,
+      ),
+    );
+    toast.warn("Ticket removed from queue and returned to open list.", {
+      position: "bottom-center",
+    });
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100 font-sans">
+      {/* Component to load external CSS for React Toastify and Font Awesome */}
+      <ExternalStyles />
+
+      <Navbar />
+      <Banner
+        inProgressCount={inProgressCount}
+        resolvedCount={totalResolvedCount}
+      />
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column: Customer Tickets */}
+          <div className="lg:col-span-2">
+            <h2 className="text-xl font-bold text-gray-800 mb-6">
+              Customer Tickets
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {availableTickets.map((ticket) => (
+                <TicketCard
+                  key={ticket.id}
+                  ticket={ticket}
+                  onSelectTicket={handleAddToProgress}
+                />
+              ))}
+            </div>
+            {availableTickets.length === 0 && (
+              <div className="text-center py-16 text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm">
+                <p className="text-lg font-medium">
+                  No new open tickets available!
+                </p>
+                <p className="text-sm mt-1">
+                  Check the Task Status Queue for your assigned work.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Right Column: Task Status Section */}
+          <div className="lg:col-span-1">
+            <TaskStatus
+              inProgressTickets={inProgressQueue}
+              onCompleteTicket={handleCompleteTicket}
+              onRemoveTicket={handleRemoveFromProgress}
+              recentlyResolvedTicket={recentlyResolvedTicket}
+            />
+          </div>
+        </div>
+      </main>
+
+      <Footer />
+
+      <ToastContainer />
+    </div>
+  );
+};
+
 export default App;
