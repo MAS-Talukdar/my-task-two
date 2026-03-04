@@ -123,4 +123,132 @@ const initialTicketsData = [
     createdAt: "1/24/2024",
   },
 ];
+// --- COMPONENTS ---
+
+// Navbar Component
+const Navbar = () => (
+  <nav className="bg-white shadow-sm">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="flex justify-between h-16 items-center">
+        {/* Logo/Name */}
+        <div className="flex-shrink-0 flex items-center">
+          <span className="text-xl font-bold text-gray-900">CS</span>
+          <span className="text-xl font-normal text-gray-700 ml-1">
+            — Ticket System
+          </span>
+        </div>
+
+        {/* Menu Items and New Ticket Button */}
+        <div className="flex items-center space-x-4">
+          <div className="hidden sm:ml-6 sm:flex sm:space-x-4 lg:space-x-8 text-sm font-medium">
+            {["Home", "FAQ", "Changelog", "Blog", "Download", "Contact"].map(
+              (item) => (
+                <a
+                  key={item}
+                  href="#"
+                  className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md transition duration-150"
+                >
+                  {item}
+                </a>
+              ),
+            )}
+          </div>
+          <button className="flex items-center bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 transition duration-300">
+            <i className="fas fa-plus w-4 h-4 mr-1"></i>{" "}
+            {/* Replaced Plus icon */}
+            New Ticket
+          </button>
+          <button className="sm:hidden text-gray-500 hover:text-indigo-600 p-2 rounded-md">
+            <i className="fas fa-bars w-6 h-6"></i> {/* Replaced Menu icon */}
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+);
+
+// Banner Component
+const Banner = ({ inProgressCount, resolvedCount }) => (
+  <section className="bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="bg-purple-600 text-white p-6 rounded-lg shadow-md flex flex-col items-center justify-center h-32">
+        <p className="text-3xl font-bold">{inProgressCount}</p>
+        <p className="text-lg mt-1 font-medium">In-Progress</p>
+      </div>
+      <div className="bg-green-600 text-white p-6 rounded-lg shadow-md flex flex-col items-center justify-center h-32">
+        <p className="text-3xl font-bold">{resolvedCount}</p>
+        <p className="text-lg mt-1 font-medium">Resolved</p>
+      </div>
+    </div>
+  </section>
+);
+
+// Ticket Card Component (Left Grid)
+const TicketCard = ({ ticket, onSelectTicket }) => {
+  const priorityClasses = {
+    High: "bg-red-500 text-white", // Changed High to red for emphasis
+    Medium: "bg-orange-500 text-white", // Changed Medium to orange
+    Low: "bg-yellow-500 text-gray-800", // Changed Low to yellow
+  };
+
+  // Use a clearer mapping for High/Critical tickets (if we had Critical, it would be red/dark red)
+  const priorityDisplay = ticket.priority.toUpperCase();
+
+  const statusClasses = {
+    Open: "bg-green-100 text-green-700",
+    "InProgress-Queue": "bg-yellow-100 text-yellow-700",
+    Resolved: "bg-gray-100 text-gray-700",
+  };
+
+  const displayStatus =
+    ticket.status === "InProgress-Queue" ? "In-Progress" : ticket.status;
+
+  // Use priorityClasses for background color, default to a neutral gray if priority not found
+  const priorityBadgeClasses =
+    priorityClasses[ticket.priority] || "bg-gray-400 text-white";
+
+  return (
+    <div
+      // Only allow selection if the status is 'Open'
+      onClick={() => ticket.status === "Open" && onSelectTicket(ticket.id)}
+      className={`bg-white border border-gray-200 rounded-lg p-4 shadow-sm transition duration-300 flex flex-col ${
+        // Apply visual distinction and restrict cursor if it's in the queue
+        ticket.status === "Open"
+          ? "hover:shadow-md cursor-pointer"
+          : "opacity-80 cursor-not-allowed"
+      }`}
+    >
+      <div className="flex justify-between items-center mb-2">
+        {/* Priority element is at the top */}
+        <span
+          className={`text-xs font-semibold px-2 py-0.5 rounded ${priorityBadgeClasses}`}
+        >
+          {priorityDisplay} PRIORITY
+        </span>
+
+        <span
+          className={`text-xs font-semibold px-2 py-0.5 rounded-full ${statusClasses[ticket.status] || statusClasses["Open"]}`}
+        >
+          {displayStatus}
+        </span>
+      </div>
+      <h3 className="text-base font-semibold text-gray-900 mb-1">
+        {ticket.title}
+      </h3>
+      <p className="text-gray-500 text-sm mb-3 line-clamp-2">
+        {ticket.description}
+      </p>
+      <div className="mt-auto flex justify-between items-center text-xs text-gray-500 pt-3 border-t border-gray-100">
+        <div className="flex items-center space-x-2">
+          <p className="font-semibold text-gray-700">#{ticket.id}</p>
+          <div className="w-px h-3 bg-gray-300"></div>
+          <p>{ticket.customer}</p>
+        </div>
+        <p>{ticket.createdAt}</p>
+      </div>
+    </div>
+  );
+};
+
+
 export default App;
