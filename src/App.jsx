@@ -249,6 +249,82 @@ const TicketCard = ({ ticket, onSelectTicket }) => {
     </div>
   );
 };
+// Task Status Component (Right Sidebar)
+const TaskStatus = ({
+  inProgressTickets,
+  onCompleteTicket,
+  onRemoveTicket,
+  recentlyResolvedTicket,
+}) => (
+  <div className="bg-white rounded-lg shadow-md p-6 sticky top-4 border border-gray-200">
+    <h2 className="text-lg font-bold text-gray-800 mb-2">Task Status</h2>
+    <p className="text-sm text-gray-500 mb-6">
+      Select a ticket to Add to Task Status
+    </p>
 
+    {inProgressTickets.length === 0 ? (
+      <div className="text-center py-4 text-gray-400 bg-gray-50 rounded-md mb-6 border border-dashed border-gray-200">
+        <p className="text-sm">No tasks in progress.</p>
+        <p className="text-xs mt-1">Add tickets from the left to start.</p>
+      </div>
+    ) : (
+      <ul className="space-y-3 mb-6">
+        {inProgressTickets.map((ticket) => (
+          <li
+            key={ticket.id}
+            className="border border-gray-100 p-3 rounded-md bg-white shadow-sm flex justify-between items-center"
+          >
+            <div className="flex flex-col flex-grow">
+              <p className="font-semibold text-gray-800 text-sm line-clamp-1">
+                {ticket.title}
+              </p>
+              <p className="text-xs text-gray-500">
+                #{ticket.id} - {ticket.customer}
+              </p>
+            </div>
+            <div className="flex space-x-2 ml-4">
+              <button
+                onClick={() => onCompleteTicket(ticket.id)}
+                className="flex items-center bg-green-500 text-white text-xs font-semibold px-3 py-1 rounded-full hover:bg-green-600 transition duration-150"
+              >
+                <i className="fas fa-check-circle w-3 h-3 mr-1" />{" "}
+                {/* Replaced CheckCircle icon */}
+                Complete
+              </button>
+              <button
+                onClick={() => onRemoveTicket(ticket.id)}
+                className="text-gray-400 hover:text-gray-600 transition duration-150"
+                title="Remove from queue"
+              >
+                <i className="fas fa-times-circle w-4 h-4" />{" "}
+                {/* Replaced XCircle icon */}
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    )}
+
+    <h2 className="text-lg font-bold text-gray-800 mb-2 mt-8 border-t pt-6">
+      Resolved Task
+    </h2>
+    {recentlyResolvedTicket ? (
+      <div className="bg-green-50 p-4 rounded-md border border-green-200 flex items-center shadow-sm">
+        <i className="fas fa-check-circle w-5 h-5 text-green-600 mr-3 flex-shrink-0" />{" "}
+        {/* Replaced CheckCircle icon */}
+        <div>
+          <p className="font-semibold text-green-800 text-sm">
+            #{recentlyResolvedTicket.id} {recentlyResolvedTicket.title}
+          </p>
+          <p className="text-xs text-green-700">Resolved by you!</p>
+        </div>
+      </div>
+    ) : (
+      <div className="text-center py-4 text-gray-400 bg-gray-50 rounded-md border border-dashed border-gray-200">
+        <p className="text-sm">No resolved tasks yet.</p>
+      </div>
+    )}
+  </div>
+);
 
 export default App;
